@@ -29,30 +29,12 @@ switch lower(Action)
         cd(pathstr)
         addpath(genpath(pathstr));
         
-        %  Assert that GUILayout is installed
-        %  MATLAB introduced a new graphics system in Release 2014b. The
-        %  GUI Layout Toolbox comes in two different versions: pre 2014b
-        %  and 2014b onwards. We check for version specific files here.
-        rmpath(genpath([pathstr, filesep, 'ext', filesep, 'GUILayout-v1p17']));
-        rmpath(genpath([pathstr, filesep, 'ext', filesep, 'GUILayout']));
-        
-        try
-            %Check if toolbox is installed and of right version
-            if ( verLessThan('layout', '2.1') && ~verLessThan('matlab', '8.4.0') ) || ( ~verLessThan('layout', '2.1') && verLessThan('matlab', '8.4.0') )
-                uiwait(warndlg('Wrong GUI Layout Toolbox installed - manually remove from permanent path!', 'modal'));
-            end
-        catch
-            %Not installed yet - install
-            if verLessThan('matlab', '8.4.0')
-                run([pathstr, filesep, 'ext',filesep,'GUILayout-v1p17',filesep,'install.m']);
-            else
-                addpath([pathstr, filesep, 'ext', filesep, 'GUILayout', filesep, 'layout']);
-            end
-        end
+        %run([pathstr, filesep, 'ext',filesep,'GUILayout',filesep,'install.m']);
+        %addpath([pathstr, filesep, 'ext', filesep, 'GUILayout', filesep, 'layout']);
         
         %% - Check C++ Redistributable Installed
-        % Mutils was compiled with the Microsoft Visual C++ 2012 compiler. 
-        % The corresponding redistributable must be installed. 
+        % Mutils was compiled with the Microsoft Visual C++ 2012 compiler.
+        % The corresponding redistributable must be installed.
         % Check it only for windows
         if ispc
             try
@@ -64,22 +46,13 @@ switch lower(Action)
             if ~cpp_installed
                 url='www.microsoft.com/en-us/download/details.aspx?id=30679';
                 
-                if verLessThan('matlab', '8')
-                    ant=questdlg(...
-                        {'mutils requires the x64 Microsoft Visual C++ 2012 Redistributable';...
-                        'Click OK to go to:';
-                        url},...
-                        'C++ Redistributable Not Installed',...
-                        'OK','Cancel','Cancel');
-                else
-                    ant=inputdlg(...
-                        {'mutils requires the x64 Microsoft Visual C++ 2012 Redistributable';...
-                        'Click OK to go to:';
-                        url},...
-                        'C++ Redistributable Not Installed',...
-                        0,...
-                        {'';'';url});
-                end
+                ant=inputdlg(...
+                    {'mutils requires the x64 Microsoft Visual C++ 2012 Redistributable';...
+                    'Click OK to go to:';
+                    url},...
+                    'C++ Redistributable Not Installed',...
+                    0,...
+                    {'';'';url});
                 
                 if ~isempty(ant)
                     web(url, '-browser');
@@ -103,7 +76,7 @@ switch lower(Action)
         TextSize   = get(test_text,'Extent');
         delete(test_button);
         close(gcf)
-               
+        
         if Screensize(4)<768
             uiwait(warndlg('The screen resolution of your device can be too low to correctly display the GUI.', 'Error!', 'modal'));
         end
@@ -315,7 +288,7 @@ switch lower(Action)
         
         obj.image       = uipushtool(toolbar,'cdata',ToolbarButtons.image, 'tooltip','Save Image',...
             'Separator','on','ClickedCallback',@(a,b) folder('folder_figure'));
-                
+        
         obj.profile     = uipushtool(toolbar,'cdata',ToolbarButtons.profile, 'tooltip','Run information',...
             'Separator','on','ClickedCallback',@(a,b) run_info);
         
@@ -345,7 +318,7 @@ switch lower(Action)
         
         % Division of the figure into panels
         upanel                  = uiextras.HBox('Parent', folder_gui_handle);
-               
+        
         processing_panel        = uiextras.VBox('Parent', upanel, 'Spacing', gap);
         
         obj.tab_panel           = uiextras.TabPanel('Parent', processing_panel, ...
@@ -375,7 +348,7 @@ switch lower(Action)
         
         folder_plotting_panel   = uipanel( 'Parent', processing_panel,'Title','Plotting','Tag','folder_upanel_plotting');
         set(processing_panel, 'Sizes', [(domain_panel+interface_panel+region_panel+markers_panel+strain_panel)+2*b_height plotting_panel]);
-
+        
         right_panel             = uiextras.VBox('Parent', upanel, 'Spacing', gap);
         folder_fold_panel       = uipanel( 'Parent', right_panel,'Title','FOLDER','Tag','folder_fold_panel');
         
@@ -644,9 +617,9 @@ switch lower(Action)
             'tag', 'folder_fstrain_set', ...
             'position', [gap, gap, b_width, b_height]);
         
-       % MARKERS OPTION
-       %    Run Option Button
-       obj.folder_fstrain_options = ...
+        % MARKERS OPTION
+        %    Run Option Button
+        obj.folder_fstrain_options = ...
             uicontrol('Parent', folder_marker_panel, 'style', 'pushbutton', 'String', 'Options', ...
             'tag', 'folder_fstrain_options', ...
             'callback', @(a,b) fstrain_setting, ...
@@ -715,7 +688,7 @@ switch lower(Action)
         %% -- Play buttons
         PlayButtons = load('PlayButtons.mat');
         
-        %   START button 
+        %   START button
         obj.folder_play_go_start = ...
             uicontrol('Parent', folder_time_panel, 'style', 'pushbutton',...
             'cdata', PlayButtons.Start, 'units', 'pixels',...
@@ -724,7 +697,7 @@ switch lower(Action)
             'position', [gap, gap, b_height, b_height],...
             'enable', 'off');
         
-        %   PLAY BACK button 
+        %   PLAY BACK button
         obj.folder_play_backward = ...
             uicontrol('Parent', folder_time_panel, 'style', 'pushbutton',...
             'cdata', PlayButtons.PlayBack, 'units', 'pixels',...
@@ -733,7 +706,7 @@ switch lower(Action)
             'position', [gap+(b_height+gap), gap, b_height, b_height],...
             'enable', 'off');
         
-        %   STOP button 
+        %   STOP button
         obj.folder_play_stop = ...
             uicontrol('Parent', folder_time_panel, 'style', 'pushbutton',...
             'cdata', PlayButtons.Stop, 'units', 'pixels',...
@@ -742,7 +715,7 @@ switch lower(Action)
             'position', [gap+2*(b_height+gap), gap, b_height, b_height],...
             'enable', 'off');
         
-        %   PLAY button 
+        %   PLAY button
         obj.folder_play_forward = ...
             uicontrol('Parent', folder_time_panel, 'style', 'pushbutton',...
             'cdata', PlayButtons.Play, 'units', 'pixels',...
@@ -751,7 +724,7 @@ switch lower(Action)
             'position', [gap+3*(b_height+gap), gap, b_height, b_height],...
             'enable', 'off');
         
-        %   END button 
+        %   END button
         obj.folder_play_go_end = ...
             uicontrol('Parent', folder_time_panel, 'style', 'pushbutton',...
             'cdata', PlayButtons.End, 'units', 'pixels',...
@@ -760,7 +733,7 @@ switch lower(Action)
             'position', [gap+4*(b_height+gap), gap, b_height, b_height],...
             'enable', 'off');
         
-        %   MOVIE button 
+        %   MOVIE button
         obj.folder_movie = ...
             uicontrol('Parent', folder_time_panel, 'style', 'pushbutton',...
             'cdata', PlayButtons.Movie, 'units', 'pixels',...
@@ -790,7 +763,7 @@ switch lower(Action)
         % Colormap Type
         uicontrol('Parent', folder_scalar_panel, 'style', 'text', 'String', 'Colourmap Type','HorizontalAlignment', 'left', ...
             'position', [gap, 4*(b_height+gap)+gap, text_width, b_height]);
-        % Field       
+        % Field
         obj.folder_colormap_type = ...
             uicontrol('Parent', folder_scalar_panel, 'style', 'popupmenu',...
             'String', {'Monochromatic';'Bichromatic';'Diverging';'Miscellaneous'},...
@@ -801,7 +774,7 @@ switch lower(Action)
         % Colormap
         uicontrol('Parent', folder_scalar_panel, 'style', 'text', 'String', 'Colourmap','HorizontalAlignment', 'left', ...
             'position', [gap, 3*(b_height+gap)+gap, text_width, b_height]);
-        % Field       
+        % Field
         obj.folder_colormap = ...
             uicontrol('Parent', folder_scalar_panel, 'style', 'popupmenu',...
             'String', {'blues';'browns';'gray';'greens';'oranges';'purples'; 'reds'; 'violets'},...
@@ -813,7 +786,7 @@ switch lower(Action)
         uicontrol('Parent', folder_scalar_panel, 'style', 'text', 'String', 'Number of Colours','HorizontalAlignment', 'left', ...
             'position', [gap, 2*(b_height+gap)+gap, text_width, b_height],...
             'tooltipstring','Number of colours in the colormap.');
-        % Field       
+        % Field
         obj.folder_ncolors = ...
             uicontrol('Parent', folder_scalar_panel, 'style', 'edit','String','',...
             'callback',  @(a,b)  folder('uicontrol_callback'),...
@@ -930,7 +903,7 @@ switch lower(Action)
         obj.folder_tensor_style = ...
             uicontrol('Parent', folder_tensor_panel, 'style', 'popupmenu',...
             'String', {'Max Principle Axis Direction';'Min Principle Axis Direction';'Max and Min Principle Axis Direction';...
-                       'Ellypse Glyphs'},...
+            'Ellypse Glyphs'},...
             'callback',  @(a,b)  folder('uicontrol_callback'),...
             'tag', 'folder_tensor_style', 'BackgroundColor','w',...
             'position', [gap+text_width, 3*(b_height+gap)+gap, box_width, b_height]);
@@ -973,7 +946,7 @@ switch lower(Action)
             'tag', 'folder_mesh', 'enable', 'on', ...
             'callback', @(a,b) folder('plot_update'), ...
             'position', [gap,  plotting_panel-1*(gap+b_height)-3*gap, b_width, b_height]);
-                
+        
         %   Markers
         obj.folder_markers = ...
             uicontrol('Parent', folder_plotting_panel, 'style', 'checkbox', 'String', 'Markers', 'Value', 1, ...
@@ -994,7 +967,7 @@ switch lower(Action)
             'tag', 'folder_colorbar', 'enable', 'on', ...
             'callback', @(a,b) folder('plot_update'), ...
             'position', [gap,  plotting_panel-2*(gap+b_height)-3*gap, b_width, b_height]);
-        % Field       
+        % Field
         obj.folder_colorbar_position = ...
             uicontrol('Parent', folder_plotting_panel, 'style', 'popupmenu',...
             'String', {'Right outside';'Right inside';'Bottom outside';'Bottom inside';},...
@@ -1002,7 +975,7 @@ switch lower(Action)
             'tag', 'folder_colorbar_position', 'BackgroundColor','w',...
             'position', [gap+text_width, plotting_panel-2*(gap+b_height)-3*gap, box_width, b_height]);
         
-
+        
         %   Plotting Options (Setting)
         uicontrol('Parent', folder_plotting_panel, 'style', 'pushbutton', 'String', 'Options',...
             'tag', 'folder_plotting_options', 'enable', 'on', ...
@@ -1287,7 +1260,7 @@ switch lower(Action)
             fold.save = 0;
             setappdata(folder_gui_handle, 'fold', fold);
         end
-           
+        
     case 'default_values'
         %% DEFAULT VALUES
         
@@ -1327,7 +1300,7 @@ switch lower(Action)
         fold.region(3).area                 = 1e-1;
         fold.region(3).material             = 1;
         
-        % Passive Markers 
+        % Passive Markers
         fold.markers.set                    = 0;
         fold.markers.type                   = 3;
         fold.markers.MARKERS                = [];
@@ -1512,7 +1485,7 @@ switch lower(Action)
             tristr.regions        = PHASE_PTS;
             
             % Generate mesh using triangle
-            try 
+            try
                 MESH              = mtriangle(opts, tristr);
                 display(['MESH NODES        : ' num2str(size(MESH.NODES,2))]);
                 display(['MESH TRIANGLES    : ' num2str(size(MESH.ELEMS,2))]);
@@ -1531,7 +1504,7 @@ switch lower(Action)
             fold.PHASE_idx      = PHASE_idx;
             
         else
-                        
+            
             % Initialize data for load
             NODES_run   = [];
             
@@ -1539,7 +1512,7 @@ switch lower(Action)
             load([fold.run_output,'run_output',filesep,'nodes_',num2str(fold.num.it,'%.4d')]);
             temp = load([fold.run_output,'run_output',filesep,'run_',num2str(fold.num.it,'%.4d')],'MESH');
             
-            % Find interfaces 
+            % Find interfaces
             for ii = 1:length(fold.PHASE_idx)-1
                 idx            = fold.PHASE_idx(ii+1)-1+(1:fold.face(ii).nx);
                 fold.face(ii).X = NODES_run(1,idx);
@@ -1856,14 +1829,14 @@ switch lower(Action)
                     set(obj.folder_markers_menu,'enable', 'on');
                 else
                     set(obj.folder_markers_menu,'enable', 'off');
-                end 
+                end
             else
                 set(obj.folder_markers_type,    'enable', 'off');
                 set(obj.folder_markers_options,	'enable', 'off');
                 set(obj.folder_markers,         'enable', 'off');
                 set(obj.folder_markers_menu,    'enable', 'off');
                 
-            end  
+            end
             set(obj.folder_fstrain_set,         'enable', 'on', 'value', fold.fstrain.set);
             if fold.fstrain.set == 1
                 set(obj.folder_fstrain_options,	'enable', 'on');
@@ -1877,7 +1850,7 @@ switch lower(Action)
                 set(obj.folder_fstrain_options,	'enable', 'off');
                 set(obj.folder_fstrain,         'enable', 'off');
                 set(obj.folder_fstrain_menu,    'enable', 'off');
-            end  
+            end
             
             % - Deformation
             if ~isfield(fold, 'NODES_run')
@@ -1942,7 +1915,7 @@ switch lower(Action)
                     set(obj.folder_ncolors,       	'enable', 'off');
                     set(obj.folder_clim,          	'enable', 'off');
                     set(obj.folder_cmin,            'enable', 'off');
-                 	set(obj.folder_cmax,            'enable', 'off');
+                    set(obj.folder_cmax,            'enable', 'off');
                     set(obj.folder_flip,          	'enable', 'off');
                     set(obj.folder_logscale,      	'enable', 'off');
                 else
@@ -2061,7 +2034,7 @@ switch lower(Action)
                 set(obj.folder_fstrain,         'enable', 'on');
             else
                 set(obj.folder_fstrain,         'enable', 'off');
-            end  
+            end
             
             % Update slider values
             set(obj.folder_slider,  'enable', 'on', 'min', 1, 'max', fold.num.nt+1, 'value', fold.num.it, 'SliderStep', [1/fold.num.nt 1/fold.num.nt]);
@@ -2196,7 +2169,7 @@ switch lower(Action)
         % not show up when we ask gcbo. file comment on FEX?
         % Need to figure out if we go from 2 to 1 or 1 to 2
         % Other possibility is that folder_run has caused a tab panel
-        % switch once results are obtained. 
+        % switch once results are obtained.
         % Additional problem is with different versions of GUILayout and
         % SelectedChild is mixed up
         if verLessThan('matlab', '8.4.0')
@@ -2220,7 +2193,7 @@ switch lower(Action)
                 Whoiscalling = 'tab_panel_child2';
             end
         end
-            
+        
         
         if isempty(Whoiscalling)
             %  Update status bar & bail out
@@ -2233,16 +2206,16 @@ switch lower(Action)
         face        = getappdata(folder_gui_handle, 'face');
         region      = getappdata(folder_gui_handle, 'region');
         
-        % Check input parameter 
-        if strcmpi(Whoiscalling,'folder_domain_width') || strcmpi(Whoiscalling,'folder_domain_height') || ... 
-            strcmpi(Whoiscalling,'folder_position') || strcmpi(Whoiscalling,'folder_ampl') || ...
-            strcmpi(Whoiscalling,'folder_wave') || strcmpi(Whoiscalling,'folder_phase_shift') || ...
-            strcmpi(Whoiscalling,'folder_bell_width') || strcmpi(Whoiscalling,'folder_nx') || ...
-            strcmpi(Whoiscalling,'folder_area') || strcmpi(Whoiscalling,'folder_shortening') || ...
-            strcmpi(Whoiscalling,'folder_ncolors') || strcmpi(Whoiscalling,'folder_cmin') || strcmpi(Whoiscalling,'folder_cmax') || ...
-            strcmpi(Whoiscalling,'folder_vector_scaling') || strcmpi(Whoiscalling,'folder_tensor_scaling') || ...
-            strcmpi(Whoiscalling,'plot_xmin') || strcmpi(Whoiscalling,'plot_xmax') || ...
-            strcmpi(Whoiscalling,'plot_ymin') || strcmpi(Whoiscalling,'plot_ymax')
+        % Check input parameter
+        if strcmpi(Whoiscalling,'folder_domain_width') || strcmpi(Whoiscalling,'folder_domain_height') || ...
+                strcmpi(Whoiscalling,'folder_position') || strcmpi(Whoiscalling,'folder_ampl') || ...
+                strcmpi(Whoiscalling,'folder_wave') || strcmpi(Whoiscalling,'folder_phase_shift') || ...
+                strcmpi(Whoiscalling,'folder_bell_width') || strcmpi(Whoiscalling,'folder_nx') || ...
+                strcmpi(Whoiscalling,'folder_area') || strcmpi(Whoiscalling,'folder_shortening') || ...
+                strcmpi(Whoiscalling,'folder_ncolors') || strcmpi(Whoiscalling,'folder_cmin') || strcmpi(Whoiscalling,'folder_cmax') || ...
+                strcmpi(Whoiscalling,'folder_vector_scaling') || strcmpi(Whoiscalling,'folder_tensor_scaling') || ...
+                strcmpi(Whoiscalling,'plot_xmin') || strcmpi(Whoiscalling,'plot_xmax') || ...
+                strcmpi(Whoiscalling,'plot_ymin') || strcmpi(Whoiscalling,'plot_ymax')
             
             if isnan(str2double(get(gcbo,  'string')))
                 warndlg('Wrong input argument.', 'Error!', 'modal');
@@ -2250,7 +2223,7 @@ switch lower(Action)
                 return;
             end
         end
-
+        
         % Check if previous run data exists and what to do
         if isfield(fold, 'NODES_run') && ~isempty(fold.NODES_run) && ~strcmpi(Whoiscalling, 'folder_slider') && ~strcmpi(Whoiscalling, 'tab_panel_child1') && ~strcmpi(Whoiscalling, 'tab_panel_child2') && ...
                 ~strcmpi(Whoiscalling,'materials_apply') && ~strcmpi(Whoiscalling,'materials_done') && ...
@@ -2287,7 +2260,7 @@ switch lower(Action)
                 
                 % Update statusbar
                 set(obj.folder_status_bar_text,'string','')
-                return; 
+                return;
             end
         end
         
@@ -2306,8 +2279,8 @@ switch lower(Action)
                 else
                     fold.num.it = fold.num.nt+1;
                 end
-            
-            %% -- Domain
+                
+                %% -- Domain
             case 'folder_domain_width'
                 
                 % Prevent from traingle crash
@@ -2362,7 +2335,7 @@ switch lower(Action)
                     end
                 end
                 
-             %% -- Interface
+                %% -- Interface
             case 'folder_new_interface'
                 
                 % Find new interface position
@@ -2579,9 +2552,9 @@ switch lower(Action)
                 end
                 
                 fold.face(face).nx       = str2double(get(wcbo,  'string'));
-              
+                
             case 'shift_center'
-               
+                
                 shift = -(fold.face(1).y + (fold.face(end).y-fold.face(1).y)/2);
                 
                 if shift+fold.face(1).y < -fold.box.height/2 || shift+fold.face(end).y > fold.box.height/2
@@ -2598,7 +2571,7 @@ switch lower(Action)
                 % Create input dialog box
                 answer = inputdlg('Shift all interfaces by a value', 'Shift Interfaces', [1 50]);
                 
-                if ~isempty(answer) 
+                if ~isempty(answer)
                     if ~isnan(str2double(answer))
                         shift  = str2double(answer);
                         if shift+fold.face(1).y < -fold.box.height/2 || shift+fold.face(end).y > fold.box.height/2
@@ -2613,14 +2586,14 @@ switch lower(Action)
                         warndlg('Wrongly assinged value.', 'Error!', 'modal');
                         return;
                     end
-                end 
+                end
                 
             case 'shift_lower_interface'
                 
                 % Create input dialog box
                 answer = inputdlg('Set position of the lowermost interface to', 'Shift Interfaces', [1 50]);
                 
-                if ~isempty(answer) 
+                if ~isempty(answer)
                     if ~isnan(str2double(answer))
                         shift  = str2double(answer)-fold.face(1).y;
                         if shift+fold.face(1).y < -fold.box.height/2 || shift+fold.face(end).y > fold.box.height/2
@@ -2638,10 +2611,10 @@ switch lower(Action)
                 end
                 
             case 'shift_upper_interface'
-           
+                
                 % Create input dialog box
                 answer = inputdlg('Set position of the lowermost interface to', 'Shift Interfaces', [1 50]);
-                if ~isempty(answer) 
+                if ~isempty(answer)
                     if ~isnan(str2double(answer))
                         shift  = str2double(answer)-fold.face(end).y;
                         if shift+fold.face(1).y < -fold.box.height/2 || shift+fold.face(end).y > fold.box.height/2
@@ -2673,7 +2646,7 @@ switch lower(Action)
                         fold.face(iface).pert = Selection;
                     end
                 end
-            
+                
             case 'set_amplitude'
                 
                 % Create input dialog box
@@ -2690,7 +2663,7 @@ switch lower(Action)
                         else
                             warndlg('High amplitude perturbation causes the neighbouring interfaces to intersect.', 'Error!', 'modal');
                             folder('uicontrol_update');
-                            return; 
+                            return;
                         end
                         
                     else
@@ -2698,7 +2671,7 @@ switch lower(Action)
                         folder('uicontrol_callback');
                         return;
                     end
-                end        
+                end
                 
             case 'set_wavelength'
                 
@@ -2828,7 +2801,7 @@ switch lower(Action)
                 end
                 
                 
-            %% -- Regions
+                %% -- Regions
             case 'folder_material'
                 
                 fold.region(region).material 	= get(wcbo,  'value');
@@ -2869,7 +2842,7 @@ switch lower(Action)
                 
                 fold.region(region).area        = str2double(get(wcbo,  'string'));
                 
-            %% -- Markers and Finite Strain
+                %% -- Markers and Finite Strain
             case 'folder_markers_set'
                 fold.markers.set = get(wcbo,  'value');
                 
@@ -2879,7 +2852,7 @@ switch lower(Action)
             case 'folder_fstrain_set'
                 fold.fstrain.set = get(wcbo,  'value');
                 
-            %% -- Deformation
+                %% -- Deformation
             case 'folder_strain_shortening'
                 if get(wcbo,  'value') == 1
                     fold.num.strain_mode  	= +1;
@@ -2915,11 +2888,11 @@ switch lower(Action)
                     return;
                 end
                 
-            %% -- Time step
+                %% -- Time step
             case 'folder_slider'
                 fold.num.it             = round(get(wcbo,  'value'));
                 
-            %% -- Scalar Field    
+                %% -- Scalar Field
             case 'folder_plotting'
                 
                 fold.popts.plot_selection 	      = get(wcbo,  'value');
@@ -2982,7 +2955,7 @@ switch lower(Action)
                     errordlg('Wrongly assinged c-min and c-max values.');
                     return;
                 end
-               
+                
                 fold.popts.cmin      = str2double(get(wcbo,  'string'));
                 
             case 'folder_cmax'
@@ -2990,7 +2963,7 @@ switch lower(Action)
                     errordlg('Assign c-max value.');
                     return;
                 end
-                if fold.popts.cmin >= str2double(get(wcbo,'string')) 
+                if fold.popts.cmin >= str2double(get(wcbo,'string'))
                     errordlg('Wrongly assinged c-min and c-max values.');
                     return;
                 end
@@ -3003,16 +2976,16 @@ switch lower(Action)
             case 'folder_logscale'
                 fold.popts.logscale     = get(wcbo,  'value');
                 
-            %% -- Vector Field
+                %% -- Vector Field
             case 'folder_vector'
                 set(obj.folder_vector,'value',get(wcbo,  'value'));
-            
+                
             case 'folder_vector_opts'
                 fold.vector.opts        = get(wcbo,  'value');
                 
             case 'folder_vector_relative'
                 fold.vector.relative 	= get(wcbo,  'value');
-            
+                
             case 'folder_vector_scaling'
                 if str2double(get(wcbo,  'string')) < 0
                     errordlg('The value must be positive.');
@@ -3020,10 +2993,10 @@ switch lower(Action)
                 end
                 fold.vector.scaling 	= str2double(get(wcbo,  'string'));
                 
-            %% -- Tensor Field   
+                %% -- Tensor Field
             case 'folder_tensor'
                 set(obj.folder_tensor,'value',get(wcbo,  'value'));
-            
+                
             case 'folder_tensor_opts'
                 fold.tensor.opts        = get(wcbo,  'value');
                 
@@ -3038,12 +3011,12 @@ switch lower(Action)
                     errordlg('The value must be positive.');
                     return;
                 end
-                fold.tensor.scaling 	= str2double(get(wcbo,  'string'));    
+                fold.tensor.scaling 	= str2double(get(wcbo,  'string'));
                 
-            %% -- Plotting    
+                %% -- Plotting
             case 'folder_colorbar_position'
                 fold.popts.colorbar_position  = get(wcbo,  'value');
-            
+                
             case 'plot_xlim'
                 
                 if get(obj.plot_xlim, 'value') == 1
@@ -3180,14 +3153,14 @@ switch lower(Action)
                 fold.num.picards        = ropts.picards;
                 fold.num.newtons        = ropts.newtons;
                 fold.num.relres         = ropts.relres;
-
+                
         end
         
         %% - Generate markers
         if strcmpi(Whoiscalling,'folder_domain_width') || strcmpi(Whoiscalling,'folder_domain_height') || ...
-           strcmpi(Whoiscalling,'folder_markers_set') || strcmpi(Whoiscalling,'folder_markers_type') || ...
-           strcmpi(Whoiscalling,'markers_done')
-       
+                strcmpi(Whoiscalling,'folder_markers_set') || strcmpi(Whoiscalling,'folder_markers_type') || ...
+                strcmpi(Whoiscalling,'markers_done')
+            
             if get(obj.folder_markers_set,'value') > 0
                 
                 % Prepare markers input
@@ -3222,7 +3195,7 @@ switch lower(Action)
         
         %% - Generate Finite Strain Ellispes
         if strcmpi(Whoiscalling,'folder_domain_width') || strcmpi(Whoiscalling,'folder_domain_height') || ...
-           strcmpi(Whoiscalling,'folder_fstrain_set') || strcmpi(Whoiscalling,'fstrain_apply') || strcmpi(Whoiscalling,'fstrain_done')
+                strcmpi(Whoiscalling,'folder_fstrain_set') || strcmpi(Whoiscalling,'fstrain_apply') || strcmpi(Whoiscalling,'fstrain_done')
             
             if fold.fstrain.set > 0
                 
@@ -3352,7 +3325,7 @@ switch lower(Action)
                         
                         clear temp
                     end
-                        
+                    
                     switch fold.popts.plot_selection_component
                         
                         case 1
@@ -3368,9 +3341,9 @@ switch lower(Action)
                         case 3
                             % vy
                             Hn  = fold.Vel(2:2:end);
-                        
+                            
                     end
-
+                    
                     %c   = reshape(Hn(fold.MESH.ELEMS(1:3,fold.MESH.elem_markers==ireg)), 3, sum(fold.MESH.elem_markers==ireg));
                     
                 case 3
@@ -3454,7 +3427,7 @@ switch lower(Action)
                     % Calculate strain rate
                     nelblo           = 1e3;
                     [Exx, Eyy, Exy]  = strain_rate(fold.Vel, fold.MESH, nelblo);
-
+                    
                     switch fold.popts.plot_selection_component
                         
                         case 1
@@ -3472,9 +3445,9 @@ switch lower(Action)
                         case 4
                             % xy
                             Hn = Exy;
-                           
+                            
                     end
-                                        
+                    
                 case 6
                     %% -- Stress
                     if isempty(fold.Vel) || isempty(fold.Mu_app) || isempty(fold.Pressure)
@@ -3497,13 +3470,13 @@ switch lower(Action)
                     Sxy              = 2*fold.Mu_app.*Exy;
                     
                     Pressure = [fold.Pressure;...
-                               (fold.Pressure(2,:)+fold.Pressure(3,:))/2;...
-                               (fold.Pressure(1,:)+fold.Pressure(3,:))/2;...
-                               (fold.Pressure(1,:)+fold.Pressure(2,:))/2;...
-                               (fold.Pressure(1,:)+fold.Pressure(2,:)+fold.Pressure(2,:))/3;];
-                        
+                        (fold.Pressure(2,:)+fold.Pressure(3,:))/2;...
+                        (fold.Pressure(1,:)+fold.Pressure(3,:))/2;...
+                        (fold.Pressure(1,:)+fold.Pressure(2,:))/2;...
+                        (fold.Pressure(1,:)+fold.Pressure(2,:)+fold.Pressure(2,:))/3;];
+                    
                     switch fold.popts.plot_selection_component
-
+                        
                         case 1
                             % II invariant
                             Hn   = sqrt((Sxx-Syy).^2./4+Sxy.^2);
@@ -3519,9 +3492,9 @@ switch lower(Action)
                         case 4
                             % xy
                             Hn   = Sxy;
-                        
+                            
                     end
-                        
+                    
                 case 7
                     %% -- Deviatoric Stress
                     if isempty(fold.Vel) || isempty(fold.Mu_app)
@@ -3576,10 +3549,10 @@ switch lower(Action)
                     end
                     
                     Hn = [fold.Pressure;...
-                         (fold.Pressure(2,:)+fold.Pressure(3,:))/2;...
-                         (fold.Pressure(1,:)+fold.Pressure(3,:))/2;...
-                         (fold.Pressure(1,:)+fold.Pressure(2,:))/2;...
-                         (fold.Pressure(1,:)+fold.Pressure(2,:)+fold.Pressure(2,:))/3;];
+                        (fold.Pressure(2,:)+fold.Pressure(3,:))/2;...
+                        (fold.Pressure(1,:)+fold.Pressure(3,:))/2;...
+                        (fold.Pressure(1,:)+fold.Pressure(2,:))/2;...
+                        (fold.Pressure(1,:)+fold.Pressure(2,:)+fold.Pressure(2,:))/3;];
                     
             end
             
@@ -3593,9 +3566,9 @@ switch lower(Action)
             else
                 
                 idx = [fold.MESH.ELEMS([1 6 5],fold.MESH.elem_markers==ireg), ...
-                        fold.MESH.ELEMS([6 2 4],fold.MESH.elem_markers==ireg), ...
-                        fold.MESH.ELEMS([6 4 5],fold.MESH.elem_markers==ireg), ...
-                        fold.MESH.ELEMS([5 4 3],fold.MESH.elem_markers==ireg)];
+                    fold.MESH.ELEMS([6 2 4],fold.MESH.elem_markers==ireg), ...
+                    fold.MESH.ELEMS([6 4 5],fold.MESH.elem_markers==ireg), ...
+                    fold.MESH.ELEMS([5 4 3],fold.MESH.elem_markers==ireg)];
                 
                 % For velocity plot divide the mesh into smaller triangle
                 X   = reshape(fold.MESH.NODES(1,idx), 3, size(idx,2));
@@ -3608,18 +3581,18 @@ switch lower(Action)
                 c   = Hn;
                 
             elseif fold.popts.plot_selection == 2 || fold.popts.plot_selection==3
-                                    
+                
                 c   = Hn(idx);
                 
             else
                 
                 c    = [Hn([1 6 5],fold.MESH.elem_markers==ireg),...
-                        Hn([6 2 4],fold.MESH.elem_markers==ireg),...
-                        Hn([6 4 5],fold.MESH.elem_markers==ireg),...
-                        Hn([5 4 3],fold.MESH.elem_markers==ireg)];
+                    Hn([6 2 4],fold.MESH.elem_markers==ireg),...
+                    Hn([6 4 5],fold.MESH.elem_markers==ireg),...
+                    Hn([5 4 3],fold.MESH.elem_markers==ireg)];
                 
             end
-                    
+            
             
             if fold.popts.logscale==0
                 fh(ireg) = patch(X, Y, c, 'Parent', h_axes);
@@ -3668,10 +3641,10 @@ switch lower(Action)
                 item7 = uimenu(hcmenu, 'Label', ['A: ',num2str( fold.material_data{fold.region(ireg).material,8} )],...
                     'tag',num2str(fold.region(ireg).material),'callback',@(a,b)  materials);
             end
-           set(fh(ireg),'uicontextmenu',hcmenu);
+            set(fh(ireg),'uicontextmenu',hcmenu);
             
         end
-                
+        
         %% - Mark selected region & interface
         % Regions
         if region>0
@@ -3766,7 +3739,7 @@ switch lower(Action)
         %% - Finite strain
         % Generate ellipse glyphs
         if get(obj.folder_fstrain_set, 'value') && get(obj.folder_fstrain, 'value')
-                
+            
             try
                 FSTRAIN_run         = [];
                 FSTRAIN_GRID_run    = [];
@@ -3790,9 +3763,9 @@ switch lower(Action)
             nx          = fold.fstrain.resolution+1;
             theta       = linspace(0,2*pi,nx);
             Xb          = bsxfun(@times, cos(phi(:)), D1(:)*cos(theta))+...
-                          bsxfun(@times,-sin(phi(:)), D2(:)*sin(theta));
+                bsxfun(@times,-sin(phi(:)), D2(:)*sin(theta));
             Yb          = bsxfun(@times, sin(phi(:)), D1(:)*cos(theta))+...
-                          bsxfun(@times, cos(phi(:)), D2(:)*sin(theta));
+                bsxfun(@times, cos(phi(:)), D2(:)*sin(theta));
             Xb          = [bsxfun(@minus, x0(:), Xb)'; NaN(1,size(Xb,1))];
             Yb          = [bsxfun(@minus, y0(:), Yb)'; NaN(1,size(Yb,1))];
             Xb          = Xb(:);
@@ -3890,7 +3863,7 @@ switch lower(Action)
         
         %% - Tensor
         if get(obj.folder_tensor, 'value')
-                
+            
             nx      = fold.tensor.x_density;
             
             % Define the x-grid values
@@ -4147,7 +4120,7 @@ switch lower(Action)
                 legend_orientation = {'vertical','vertical','vertical','vertical'};
                 labels             = char(fold.material_data{vertcat(fold.region(length(fold.region):-1:1).material),2});
                 hl = legend(fh(end:-1:1),labels,'Location',legend_positions{fold.popts.colorbar_position},...
-                       'Orientation',legend_orientation{fold.popts.colorbar_position});
+                    'Orientation',legend_orientation{fold.popts.colorbar_position});
                 %set(hl,'FontName','MyriadPro-Regular','FontSize',8);
             else
                 colorbar_positions = {'eastoutside','east','southoutside','south'};
@@ -4233,7 +4206,7 @@ switch lower(Action)
         
         % Plot Update
         folder('plot_update');
-                
+        
     case 'folder_save'
         %% SAVE GEOMETRY
         
@@ -4487,9 +4460,9 @@ switch lower(Action)
     case 'folder_run'
         %% RUN
         
-        %  First save 
+        %  First save
         folder('save_as_project')
-            
+        
         
         %  Get data and object handles
         fold        = getappdata(folder_gui_handle, 'fold');
@@ -4585,7 +4558,7 @@ switch lower(Action)
         
         % Update current folder with data
         fold.run_output = fold.run_output;
-               
+        
         %  Make sure that final fold shape is plotted
         fold.num.it             = fold.num.nt+1;
         
@@ -4605,9 +4578,9 @@ switch lower(Action)
         %  Uicontrols Update
         folder('uicontrol_update');
         
-        % Save data 
+        % Save data
         save([fold.run_output,'fold'],'fold');
-
+        
         tab_panel               = obj.tab_panel;
         tab_panel.SelectedChild = 2;
         
@@ -4627,7 +4600,7 @@ switch lower(Action)
         Whoiscalling    = get(wcbo, 'tag');
         
         switch Whoiscalling
-                
+            
             case 'folder_play_go_start'
                 fold.num.it             = 1;
                 
@@ -4653,7 +4626,7 @@ switch lower(Action)
                     % Check for a status of an interrupt flag
                     flag = getappdata(folder_gui_handle, 'flag');
                     if flag == 1
-                       break;
+                        break;
                     end
                     
                     fold.num.it = ii;
@@ -4681,7 +4654,7 @@ switch lower(Action)
                 % Set an interrupt flag and write into storage
                 flag = 1;
                 setappdata(folder_gui_handle, 'flag', flag);
-            
+                
             case 'folder_play_forward'
                 
                 % Set an interrupt flag and write into storage
@@ -4696,12 +4669,12 @@ switch lower(Action)
                 set(obj.folder_play_go_end,     'enable', 'off');
                 set(obj.folder_movie,           'enable', 'off');
                 
-                for ii = fold.num.it+1:fold.num.nt+1    
-                
+                for ii = fold.num.it+1:fold.num.nt+1
+                    
                     % Check for a status of an interrupt flag
                     flag = getappdata(folder_gui_handle, 'flag');
                     if flag == 1
-                       break;
+                        break;
                     end
                     
                     fold.num.it = ii;
@@ -4926,8 +4899,8 @@ switch lower(Action)
                 'Save as',fold.run_output);
         else
             [Filename, Pathname] = uiputfile(...
-            {'*.mat'},...
-            'Save as');
+                {'*.mat'},...
+                'Save as');
         end
         
         if ~(length(Filename)==1 && Filename==0)
@@ -4960,7 +4933,7 @@ end
 
 %% fun copying files
     function copying_file(sourcefolder, destinationfolder)
-            
+        
         %  Close previous waitbars if exist
         h = findobj(0,'tag','TMWWaitbar');
         delete(h)
@@ -4997,7 +4970,7 @@ end
                 break;
             end
         end
-            
+        
         %  Close waitbar
         h = findobj(0,'tag','TMWWaitbar');
         if ~isempty(h)
@@ -5052,9 +5025,9 @@ end
             PHASE_idx(ii)   = idx_nodes(ii)+1;
             %PHASE_PTS(:,ii) = [NODES(1,idx_nodes(ii)+1)+1e-3 NODES(2,idx_nodes(ii)+1)+1e-3 ii fold.region(ii).area]';
             PHASE_PTS(:,ii) = [NODES(1,idx_nodes(ii)+1)+ 1e-6 ...
-                               NODES(2,idx_nodes(ii)+1)+ (NODES(2,idx_nodes(ii+1)+1)-NODES(2,idx_nodes(ii)+1))/10 ...
-                               ii ...
-                               fold.region(ii).area]';
+                NODES(2,idx_nodes(ii)+1)+ (NODES(2,idx_nodes(ii+1)+1)-NODES(2,idx_nodes(ii)+1))/10 ...
+                ii ...
+                fold.region(ii).area]';
         end
         
         % TRIANGLE
@@ -5134,7 +5107,7 @@ end
             WS.ymin   = min(MESH.NODES(2,:));
             WS.ymax   = max(MESH.NODES(2,:));
             
-           % map_pm    = tsearch2(MESH.NODES, MESH.ELEMS(1:3,:), grid, WS);
+            % map_pm    = tsearch2(MESH.NODES, MESH.ELEMS(1:3,:), grid, WS);
             
             opts.nthreads = 1;
             
@@ -5188,17 +5161,17 @@ end
         nx      = 10;
         theta_r = linspace(-pi/4,pi/4,nx);
         Xr = bsxfun(@times, cos(phi(:)), a(:)*[sin(theta_r) -sin(-theta_r)])+...
-             bsxfun(@times,-sin(phi(:)), b(:)*[cos(theta_r) -cos( theta_r)]);
+            bsxfun(@times,-sin(phi(:)), b(:)*[cos(theta_r) -cos( theta_r)]);
         Yr = bsxfun(@times, sin(phi(:)), a(:)*[sin(theta_r) -sin(-theta_r)])+...
-             bsxfun(@times, cos(phi(:)), b(:)*[cos(theta_r) -cos( theta_r)]);
+            bsxfun(@times, cos(phi(:)), b(:)*[cos(theta_r) -cos( theta_r)]);
         Xr = bsxfun(@minus, x0(:), Xr);
         Yr = bsxfun(@minus, y0(:), Yr);
         
         theta_b = linspace(-pi/4,-3*pi/4,nx);
         Xb = bsxfun(@times, cos(phi(:)), a(:)*[sin(theta_b)  sin(-theta_b)])+...
-             bsxfun(@times,-sin(phi(:)), b(:)*[cos(theta_b)  cos( theta_b)]);
+            bsxfun(@times,-sin(phi(:)), b(:)*[cos(theta_b)  cos( theta_b)]);
         Yb = bsxfun(@times, sin(phi(:)), a(:)*[sin(theta_b)  sin(-theta_b)])+...
-             bsxfun(@times, cos(phi(:)), b(:)*[cos(theta_b)  cos( theta_b)]);
+            bsxfun(@times, cos(phi(:)), b(:)*[cos(theta_b)  cos( theta_b)]);
         Xb = bsxfun(@minus, x0(:), Xb);
         Yb = bsxfun(@minus, y0(:), Yb);
     end
@@ -5266,7 +5239,7 @@ end
         
         if region>0
             set(fh2,'XData',fold.NODES(1,[fold.REGIONS{region} fold.REGIONS{region}(1)]),...
-                    'YData',fold.NODES(2,[fold.REGIONS{region} fold.REGIONS{region}(1)]));
+                'YData',fold.NODES(2,[fold.REGIONS{region} fold.REGIONS{region}(1)]));
             hcmenu = uicontextmenu('Parent',folder_gui_handle);
             
             % Attach uicontext menu again because previous one was covered
