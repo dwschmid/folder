@@ -1,5 +1,4 @@
 function folder(Action)
-
 % Original author:    Marta Adamuszek
 % Last committed:     $Revision: 87 $
 % Last changed by:    $Author: schmid $
@@ -23,14 +22,22 @@ switch lower(Action)
             delete(folder_gui_handle);
         end
         
-        %  Add current path and subfolders
-        folder_path = mfilename('fullpath');
-        [pathstr, ~, ~] = fileparts(folder_path);
-        cd(pathstr)
-        addpath(genpath(pathstr));
-        
-        %run([pathstr, filesep, 'ext',filesep,'GUILayout',filesep,'install.m']);
-        %addpath([pathstr, filesep, 'ext', filesep, 'GUILayout', filesep, 'layout']);
+        %  Add required folders
+        if ~isdeployed
+            folder_path    =  fileparts(mfilename('fullpath'));
+            addpath(fullfile(folder_path));
+            addpath(fullfile(folder_path, 'colormaps'));
+            addpath(fullfile(folder_path, 'doc'));
+            addpath(fullfile(folder_path, 'ext', 'Buttons'));
+            addpath(fullfile(folder_path, 'ext', 'Growth_rate'));
+            addpath(fullfile(folder_path, 'ext', 'GUILayoutToolbox', 'layout'));
+            addpath(fullfile(folder_path, 'ext', 'MSOLVER'));
+            addpath(genpath(fullfile(folder_path, 'ext', 'mutils-0.4-2')));
+            addpath(fullfile(folder_path, 'ext', 'poly_stuff'));
+            addpath(fullfile(folder_path, 'int'));
+            addpath(fullfile(folder_path, 'perturbation'));
+            addpath(fullfile(folder_path, 'rheology'));
+        end
         
         %% - Check C++ Redistributable Installed
         % Mutils was compiled with the Microsoft Visual C++ 2012 compiler.
@@ -108,6 +115,12 @@ switch lower(Action)
             'Color', get(0, 'DefaultUipanelBackgroundColor'),...
             'Units', 'Pixels', ...
             'Renderer', 'zbuffer'); %zbuffer so that contour plots work
+        
+        % Figure Icon - Undocumented
+        warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+        Icon_path	= which('folder_icon.png');
+        set(get(folder_gui_handle,'JavaFrame'),'FigureIcon', javax.swing.ImageIcon(Icon_path));
+        warning('on','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
         
         %  Save default sizes in figure
         setappdata(folder_gui_handle, 'b_height', b_height);
@@ -1290,7 +1303,11 @@ switch lower(Action)
         end
         
         % Rheology
-        Input_data          = load([fold.folder_path,filesep,'rheology',filesep,'material_parameters.mat']);
+        if ~isdeployed
+            Input_data          = load([fold.folder_path,filesep,'rheology',filesep,'material_parameters.mat']);
+        else
+            Input_data          = load('material_parameters.mat');
+        end
         fold.material_data  = Input_data.data;
         
         % Region
@@ -4923,12 +4940,8 @@ switch lower(Action)
         
     case 'help'
         %% HELP
-        
-        % Get data
-        fold        = getappdata(folder_gui_handle, 'fold');
-        
-        Path_folder_help  = [fold.folder_path,'manual.pdf'];
-        web(Path_folder_help, '-browser');
+        Path_folder_help   = which('folder_help.pdf');
+        web(Path_folder_help, '-browser'); 
         
 end
 
