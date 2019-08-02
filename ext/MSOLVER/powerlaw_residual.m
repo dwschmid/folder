@@ -14,7 +14,7 @@ else
 end
 
 if exist(['spmv.' mexext], 'file') == 3
-     opts.nthreads = 4;
+     opts.nthreads = maxNumCompThreads;
      opts.symmetric  = 1;
      Ac = sparse_convert(A, opts);     
      res = spmv(Ac, Vel(:))+Q'*p;
