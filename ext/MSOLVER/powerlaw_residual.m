@@ -14,9 +14,16 @@ else
 end
 
 if exist(['spmv.' mexext], 'file') == 3
-     opts.nthreads = maxNumCompThreads;
      opts.symmetric  = 1;
-     Ac = sparse_convert(A, opts);     
+     % mutils was not everywhere compiled with OpenMP support. Try
+     % multi-threading, if it fails, then use single thread.
+     try
+         opts.nthreads = 4;
+         Ac = sparse_convert(A, opts);
+     catch
+         opts.nthreads = 1;
+         Ac = sparse_convert(A, opts);
+     end
      res = spmv(Ac, Vel(:))+Q'*p;
 else
     A = A+tril(A,-1)';
