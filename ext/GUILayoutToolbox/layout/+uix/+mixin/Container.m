@@ -282,13 +282,15 @@ classdef Container < handle
             %track  Track usage
             
             persistent TRACKED % single shot
-            if isempty( TRACKED )
-                v = ver( 'layout' );
-                try %#ok<TRYNC>
-                    uix.tracking( 'UA-82270656-2', v(1).Version, class( obj ) )
-                end
+            % DWS - Deactive tracking, takes lot of time, especially if
+            % there is no net
+            %if isempty( TRACKED )
+            %    v = ver( 'layout' );
+            %    try %#ok<TRYNC>
+            %        uix.tracking( 'UA-82270656-2', v(1).Version, class( obj ) )
+            %    end
                 TRACKED = true;
-            end
+            %end
             
         end % track
         
